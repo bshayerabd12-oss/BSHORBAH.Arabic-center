@@ -328,6 +328,15 @@
     .key-action:hover { background: #ba654c; }
     .key-action:active, .key-action.is-pressed { background: #914735; }
 
+    .key-tashkeel {
+      border-color: #aa771c;
+      color: #1a0f07;
+      background: #d4af37;
+      font-size: 23px;
+    }
+
+    .key-tashkeel:hover { background: #e2c35b; }
+
     .key-delete { grid-column: span 2; }
     .key-space { grid-column: span 8; }
     .key-clear { grid-column: span 4; }
@@ -440,7 +449,7 @@
     <header class="masthead">
       <div>
         <h1 class="museum-name">مركز الأمير محمد بن سلمان للخط العربي</h1>
-        <p class="museum-label">اكتب اسمك بخطك المفضل</p>
+        <p class="museum-label">اكتب اسمك بخطك المفضل وشكّله بالكامل</p>
       </div>
     </header>
 
@@ -499,7 +508,21 @@
       <section class="keyboard-panel" aria-label="لوحة المفاتيح العربية">
         <div class="keyboard-topline">
           <span>لوحة المفاتيح العربية</span>
-          <strong>اضغط الحروف للكتابة</strong>
+          <strong>اضغط الحروف والحركات للكتابة</strong>
+        </div>
+        <div class="keyboard-row keyboard-row-tashkeel" aria-label="علامات التشكيل">
+          <button class="key key-tashkeel" type="button" data-char="َ" aria-label="فتحة" title="فتحة">◌َ</button>
+          <button class="key key-tashkeel" type="button" data-char="ً" aria-label="تنوين فتح" title="تنوين فتح">◌ً</button>
+          <button class="key key-tashkeel" type="button" data-char="ُ" aria-label="ضمة" title="ضمة">◌ُ</button>
+          <button class="key key-tashkeel" type="button" data-char="ٌ" aria-label="تنوين ضم" title="تنوين ضم">◌ٌ</button>
+          <button class="key key-tashkeel" type="button" data-char="ِ" aria-label="كسرة" title="كسرة">◌ِ</button>
+        </div>
+        <div class="keyboard-row keyboard-row-tashkeel" aria-label="علامات التشكيل الإضافية">
+          <button class="key key-tashkeel" type="button" data-char="ٍ" aria-label="تنوين كسر" title="تنوين كسر">◌ٍ</button>
+          <button class="key key-tashkeel" type="button" data-char="ْ" aria-label="سكون" title="سكون">◌ْ</button>
+          <button class="key key-tashkeel" type="button" data-char="ّ" aria-label="شدة" title="شدة">◌ّ</button>
+          <button class="key key-tashkeel" type="button" data-char="ٓ" aria-label="مدّة" title="مدّة">◌ٓ</button>
+          <button class="key key-tashkeel" type="button" data-char="ٰ" aria-label="ألف خنجرية" title="ألف خنجرية">◌ٰ</button>
         </div>
         <div class="keyboard-row">
           <button class="key" type="button" data-char="ض">ض</button>
@@ -630,7 +653,7 @@
         paper.style.fontSize = sizeSelect.value;
         return;
       }
-      const length = Array.from(paper.value.trim()).length;
+      const length = Array.from(paper.value.trim().replace(/\p{M}/gu, "")).length;
       paper.style.fontSize = length <= 8 ? "5.5rem" : length <= 16 ? "4.2rem" : "3rem";
     }
 
