@@ -506,6 +506,8 @@
           aria-label="اكتب رسالتك"
           placeholder="اكتب اسمك الآن بالضغط على الحروف..."
           maxlength="600"
+          inputmode="none"
+          readonly
           spellcheck="false"
         ></textarea>
       </section>
@@ -621,8 +623,8 @@
       const start = paper.selectionStart;
       const end = paper.selectionEnd;
       paper.setRangeText(text, start, end, "end");
-      paper.focus({ preventScroll: true });
       paper.dispatchEvent(new Event("input", { bubbles: true }));
+      if (paper.readOnly) paper.blur();
     }
 
     function deletePrevious() {
