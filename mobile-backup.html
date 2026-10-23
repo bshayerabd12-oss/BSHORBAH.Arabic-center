@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#211208">
   <title>مركز الأمير محمد بن سلمان للخط العربي</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Aref+Ruqaa:wght@400;700&family=Aref+Ruqaa+Ink:wght@400;700&family=Cairo:wght@600;800&family=El+Messiri:wght@600;700&family=Katibeh&family=Marhey:wght@700&family=Noto+Naskh+Arabic:wght@500;700&family=Scheherazade+New:wght@600;700&family=Vibes&display=swap" rel="stylesheet">
@@ -249,12 +250,15 @@
 
     .control-select option { color: #f4e4bc; background: #4a2e13; }
 
-    .control-select:focus-visible, .clear-button:focus-visible {
+    .control-select:focus-visible, .clear-button:focus-visible, .save-button:focus-visible {
       outline: 2px solid #d4af37;
       outline-offset: 2px;
     }
 
     .clear-button { background: #8a3b28; border-color: #a45640; }
+    .save-button { border-color: #d4af37; color: #fff5d6; background: #80621f; }
+    .save-button:hover { background: #98782d; }
+    .save-button:disabled { cursor: wait; opacity: .7; }
 
     .keyboard-panel {
       padding: 14px clamp(10px, 2vw, 21px) 13px;
@@ -490,6 +494,7 @@
       <div class="control-group">
         <button class="clear-button" type="button" data-action="clear">مسح اللوحة</button>
       </div>
+      <button id="save-image-button" class="control-select save-button" type="button">حفظ اللوحة كصورة</button>
     </section>
 
     <main>
@@ -595,6 +600,7 @@
     const timerFill = document.querySelector("#timer-fill");
     const sessionStatus = document.querySelector("#session-status");
     const toast = document.querySelector("#toast");
+    const saveImageButton = document.querySelector("#save-image-button");
     const idleLimit = 45_000;
     let lastActivity = Date.now();
     let toastTimeout;
@@ -647,6 +653,35 @@
       }
     }
 
+    async function saveParchment() {
+      if (typeof window.html2canvas !== "function") {
+        showToast("تعذر تحميل أداة حفظ الصورة");
+        return;
+      }
+
+      saveImageButton.disabled = true;
+      saveImageButton.textContent = "جارٍ تجهيز الصورة...";
+      try {
+        await document.fonts.ready;
+        const canvas = await window.html2canvas(document.querySelector(".parchment"), {
+          scale: Math.min(2, window.devicePixelRatio || 1),
+          backgroundColor: null,
+          useCORS: true
+        });
+        const link = document.createElement("a");
+        link.download = `مخطوطة_${Date.now()}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        showToast("تم حفظ اللوحة كصورة");
+      } catch {
+        showToast("تعذر حفظ الصورة، حاول مرة أخرى");
+      } finally {
+        saveImageButton.disabled = false;
+        saveImageButton.textContent = "حفظ اللوحة كصورة";
+        markActivity();
+      }
+    }
+
     function updateStyle() {
       paper.className = `paper-input ${fontSelect.value} ${inkSelect.value}`;
       if (sizeSelect.value !== "auto") {
@@ -681,6 +716,8 @@
     controlsBar.addEventListener("click", (event) => {
       if (event.target.closest('[data-action="clear"]')) clearText();
     });
+
+    saveImageButton.addEventListener("click", saveParchment);
 
     [fontSelect, sizeSelect, inkSelect].forEach((select) => {
       select.addEventListener("change", () => {
